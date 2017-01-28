@@ -6,14 +6,14 @@ CONFIG -= qt
 SOURCES += main.cpp \
     Utils.cpp \
     MasterImages.cpp \
-    ClosestNeighbour.cpp \
     DecisionFunction.cpp \
-    LabManager.cpp
+    LabManager.cpp \
+    NearestNeighbour.cpp
 
 HEADERS += \
     Recognizer.hpp \
     Utils.hpp \
-    ClosestNeighbour.hpp \
     MasterImages.hpp \
     DecisionFunction.hpp \
-    LabManager.hpp
+    LabManager.hpp \
+    NearestNeighbour.hpp
