@@ -15,7 +15,7 @@ public:
 
     std::string name() const override
     {
-        return "Master images method";
+        return "Nearest centroid method";
     }
 
 private:

@@ -5,9 +5,6 @@
 
 class NearestNeighbour : public Recognizer {
 public:
-    NearestNeighbour(int _nFeatures) : nFeatures(_nFeatures)
-    {
-    }
     virtual ~NearestNeighbour() = default;
 
     void train(const std::vector<PointClass> &trainingSet) override;
@@ -20,7 +17,6 @@ public:
     }
 
 private:
-    int nFeatures;
     std::vector<PointClass> set;
 };
 
