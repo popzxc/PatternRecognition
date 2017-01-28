@@ -1,21 +1,19 @@
-#ifndef LABMANAGER_HPP
-#define LABMANAGER_HPP
+#ifndef APP_HPP
+#define APP_HPP
 
 #include <map>
-#include <fstream>
 #include <string>
-#include "Recognizer.hpp"
+#include "Recognizers/Recognizer.hpp"
 
-class LabManager
+class App
 {
 public:
-    LabManager();
-    void executeLab(int argc, char *argv[]);
+    App(int argc, char *argv[]);
+    int exec();
 private:
-    void executeLab1();
-    void executeLab2();
-    void executeLab3();
-    void executeLab4();
+    void showHelp();
+    void generateDataset(const std::vector<std::string> &args);
+    void executeMethod(const std::vector<std::string> &args);
 
     std::vector<PointClass> readFile(std::string name);
 
@@ -25,6 +23,7 @@ private:
     void mainCheck(Recognizer &r, std::string trainFile, std::string checkFile, std::string outputFile);
 
     std::map<std::string, std::vector<std::string> > args;
+    std::string output;
 };
 
-#endif // LABMANAGER_HPP
+#endif // APP_HPP

@@ -3,17 +3,17 @@ CONFIG += console c++14
 CONFIG -= app_bundle
 CONFIG -= qt
 
-SOURCES += main.cpp \
-    Utils.cpp \
-    LabManager.cpp \
-    NearestNeighbour.cpp \
-    NearestCentroid.cpp \
-    LinearPredictorFunction.cpp
+SOURCES += App/main.cpp \
+    Recognizers/Utils.cpp \
+    Recognizers/NearestNeighbour.cpp \
+    Recognizers/NearestCentroid.cpp \
+    Recognizers/LinearPredictorFunction.cpp \
+    App/App.cpp
 
 HEADERS += \
-    Recognizer.hpp \
-    Utils.hpp \
-    LabManager.hpp \
-    NearestNeighbour.hpp \
-    NearestCentroid.hpp \
-    LinearPredictorFunction.hpp
+    Recognizers/Recognizer.hpp \
+    Recognizers/Utils.hpp \
+    Recognizers/NearestNeighbour.hpp \
+    Recognizers/NearestCentroid.hpp \
+    Recognizers/LinearPredictorFunction.hpp \
+    App/App.hpp

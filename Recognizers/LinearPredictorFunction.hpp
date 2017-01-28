@@ -19,7 +19,7 @@ public:
 
     std::string name() const override
     {
-        return "Decision function method";
+        return "Linear predictor method";
     }
 
 private:
