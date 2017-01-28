@@ -5,15 +5,15 @@ CONFIG -= qt
 
 SOURCES += main.cpp \
     Utils.cpp \
-    MasterImages.cpp \
     DecisionFunction.cpp \
     LabManager.cpp \
-    NearestNeighbour.cpp
+    NearestNeighbour.cpp \
+    NearestCentroid.cpp
 
 HEADERS += \
     Recognizer.hpp \
     Utils.hpp \
-    MasterImages.hpp \
     DecisionFunction.hpp \
     LabManager.hpp \
-    NearestNeighbour.hpp
+    NearestNeighbour.hpp \
+    NearestCentroid.hpp
