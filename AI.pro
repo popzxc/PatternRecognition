@@ -5,15 +5,15 @@ CONFIG -= qt
 
 SOURCES += main.cpp \
     Utils.cpp \
-    DecisionFunction.cpp \
     LabManager.cpp \
     NearestNeighbour.cpp \
-    NearestCentroid.cpp
+    NearestCentroid.cpp \
+    LinearPredictorFunction.cpp
 
 HEADERS += \
     Recognizer.hpp \
     Utils.hpp \
-    DecisionFunction.hpp \
     LabManager.hpp \
     NearestNeighbour.hpp \
-    NearestCentroid.hpp
+    NearestCentroid.hpp \
+    LinearPredictorFunction.hpp
