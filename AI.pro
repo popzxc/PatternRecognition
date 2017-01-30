@@ -8,7 +8,8 @@ SOURCES += App/main.cpp \
     Recognizers/NearestNeighbour.cpp \
     Recognizers/NearestCentroid.cpp \
     Recognizers/LinearPredictorFunction.cpp \
-    App/App.cpp
+    App/App.cpp \
+    Recognizers/KMeans.cpp
 
 HEADERS += \
     Recognizers/Recognizer.hpp \
@@ -16,4 +17,5 @@ HEADERS += \
     Recognizers/NearestNeighbour.hpp \
     Recognizers/NearestCentroid.hpp \
     Recognizers/LinearPredictorFunction.hpp \
-    App/App.hpp
+    App/App.hpp \
+    Recognizers/KMeans.hpp
