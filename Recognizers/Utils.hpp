@@ -3,10 +3,21 @@
 
 #include <iostream>
 
-enum class Class : size_t {
-    A = 0,
-    B,
-    CLASSES_NUMBER
+struct Class {
+public:
+    Class();
+    Class(size_t _val);
+
+    static const Class A;
+    static const Class B;
+    static const size_t CLASSES_NUMBER;
+
+    operator size_t() const {
+        return val;
+    }
+
+private:
+    size_t val;
 };
 
 struct Point {
@@ -22,6 +33,11 @@ struct Point {
         y += rhs.y;
         return *this;
     }
+    friend bool operator==(const Point &lhs, const Point &rhs) {
+        const double delta = 0.05; // FIXME
+        return abs(lhs.x - rhs.x) < delta && abs(lhs.y - rhs.y) < delta;
+    }
+
     friend Point operator+(Point lhs, const Point& rhs)
     {
         lhs += rhs;

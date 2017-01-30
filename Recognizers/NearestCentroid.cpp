@@ -5,7 +5,7 @@ using std::vector;
 
 NearestCentroid::NearestCentroid()
 {
-    etalons.resize(static_cast<size_t>(Class::CLASSES_NUMBER));
+    etalons.resize(Class::CLASSES_NUMBER);
     clusterSizes.resize(etalons.size());
 }
 
