@@ -34,11 +34,10 @@ for line in f:
             w1x.append(x)
             w1y.append(y)
 
-if len(w0x) + len(w0y) > len(r0x) + len(r0y):
+if len(w0x) + len(w0y) > len(r0x) + len(r0y) \
+        and len(w1x) + len(w1y) > len(r1x) + len(r1y):
     (r0x, w0x) = (w0x, r0x)
     (r0y, w0y) = (w0y, r0y)
-
-if len(w1x) + len(w1y) > len(r1x) + len(r1y):
     (r1x, w1x) = (w1x, r1x)
     (r1y, w1y) = (w1y, r1y)
 
@@ -53,5 +52,5 @@ maxY = max(r0y + w0y + r1y + w1x)
 
 
 plt.plot(r0x, r0y, 'bo', w0x, w0y, 'ro', r1x, r1y, 'gs', w1x, w1y, 'rs')
-plt.show()
-input()
+plt.show(block=True)
+
