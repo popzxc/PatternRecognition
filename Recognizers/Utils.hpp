@@ -34,7 +34,6 @@ struct Point {
         return *this;
     }
     friend bool operator==(const Point &lhs, const Point &rhs) {
-        const double delta = 0.05; // FIXME
         return abs(lhs.x - rhs.x) < delta && abs(lhs.y - rhs.y) < delta;
     }
 
@@ -44,7 +43,7 @@ struct Point {
         return lhs;
     }
     template<typename T>
-    Point &operator /=(T number)
+    const Point &operator /=(T number)
     {
         x /= number;
         y /= number;
@@ -58,6 +57,7 @@ struct Point {
     }
     double x;
     double y;
+    static double delta;
 };
 
 std::ostream &operator <<(std::ostream &os, const Point &p);

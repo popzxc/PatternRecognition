@@ -1,6 +1,8 @@
 #include <cmath>
 #include "Utils.hpp"
 
+double Point::delta = 0.05;
+
 const Class Class::A = Class(0);
 const Class Class::B = Class(1);
 const size_t Class::CLASSES_NUMBER = 2;
