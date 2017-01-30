@@ -5,6 +5,7 @@
 #include "Recognizers/LinearPredictorFunction.hpp"
 #include "Recognizers/NearestCentroid.hpp"
 #include "Recognizers/NearestNeighbour.hpp"
+#include "Recognizers/KMeans.hpp"
 
 using namespace std;
 
@@ -35,11 +36,30 @@ int App::exec()
         generateDataset(args["--generate"]);
     }
 
-    if (args.find("--lab") == args.end()) {
+    auto method = args.find("--method");
+    if (method == args.end() || method->second.size() == 0) {
         return 0;
     }
 
-    executeMethod(args["--lab"]);
+    // FIXME cludge
+    if (args.find("--default") != args.end()) {
+        runDefault = true;
+    } else {
+        runDefault = false;
+        trFile = args["--input"][0];
+        chFile = args["--input"][1];
+        output = args["--output"][0];
+    }
+
+
+    executeMethod(method->second);
+
+    if (args.find("--analyze") != args.end()) {
+        // FIXME
+        string command = "./analyze.py ";
+        command += output;
+        system(command.c_str());
+    }
 
     return 0;
 }
@@ -87,13 +107,24 @@ void App::generateDataset(const std::vector<string> &args)
 void App::executeMethod(const std::vector<string> &args)
 {
     const string &method = args[0];
+    Recognizer *r = nullptr;
     if (method == "nn") {
-        // TODO
+        r = new NearestNeighbour();
     } else if (method == "nc") {
-        // TODO
+        r = new NearestCentroid();
     } else if (method == "lpf") {
-        // TODO
+        r = new LinearPredictorFunction(10); // FIXME
+    } else if (method == "km") {
+        r = new KMeans(2); // FIXME
     }
+
+    if (runDefault) {
+        defaultCheck(*r);
+    } else {
+        mainCheck(*r, trFile, chFile, output);
+    }
+
+    delete r;
 }
 
 vector<PointClass> App::readFile(string name)

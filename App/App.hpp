@@ -23,7 +23,10 @@ private:
     void mainCheck(Recognizer &r, std::string trainFile, std::string checkFile, std::string outputFile);
 
     std::map<std::string, std::vector<std::string> > args;
+    std::string trFile;
+    std::string chFile;
     std::string output;
+    bool runDefault;
 };
 
 #endif // APP_HPP
