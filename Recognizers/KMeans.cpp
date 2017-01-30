@@ -13,7 +13,8 @@ KMeans::KMeans(size_t _nClusters) : nClusters(_nClusters)
 void KMeans::train(const vector<PointClass> &trainingSet)
 {
     for (vector<PointClass>::size_type i = 0; i < min(nClusters, trainingSet.size()); ++i) {
-        clusterCenters.push_back(trainingSet[i]);
+        PointClass center = make_pair(trainingSet[i].first, Class(i));
+        clusterCenters.push_back(center);
         clusterSizes.push_back(1);
     }
 
@@ -24,7 +25,10 @@ void KMeans::train(const vector<PointClass> &trainingSet)
                 clusters[el.second] = {};
             }
         }
-        while(doKMeans(trainingSet));
+        bool end;
+        do {
+            end = doKMeans(trainingSet);
+        } while (!end);
     }
 }
 
