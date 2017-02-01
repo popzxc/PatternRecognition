@@ -1,6 +1,7 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
+#include <vector>
 #include <iostream>
 
 struct Class {
@@ -63,6 +64,8 @@ struct Point {
 std::ostream &operator <<(std::ostream &os, const Point &p);
 
 double distance(Point a, Point b);
+
+Point getClusterCenter(const std::vector<Point> &cluster);
 
 using PointClass = std::pair<Point, Class>;
 

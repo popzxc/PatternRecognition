@@ -20,7 +20,6 @@ public:
     }
 private:
     bool doKMeans(const std::vector<PointClass> &trainingSet);
-    Point getClusterCenter(const std::vector<Point> &cluster);
 
     size_t nClusters;
     std::vector<PointClass> clusterCenters;

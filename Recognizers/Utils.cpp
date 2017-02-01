@@ -27,3 +27,13 @@ Class::Class() : val(0)
 Class::Class(size_t _val) : val(_val)
 {
 }
+
+Point getClusterCenter(const std::vector<Point> &cluster)
+{
+    Point center;
+    for (auto& p : cluster) {
+        center += p;
+    }
+    center /= cluster.size();
+    return center;
+}

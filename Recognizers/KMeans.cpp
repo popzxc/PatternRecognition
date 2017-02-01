@@ -68,12 +68,22 @@ bool KMeans::doKMeans(const vector<PointClass> &trainingSet)
         clusters[curClass].push_back(curPoint);
     }
 
-    // Calculate new cluster centers
+    // Find new cluster centers
     vector<PointClass> newClusterCenters;
     vector<size_t> newClusterSizes;
     for (auto& el : clusters) {
-        newClusterCenters.push_back(make_pair(getClusterCenter(el.second), el.first));
-        newClusterSizes.push_back(el.second.size());
+        // Calculate new cluster center
+        Point clusterCenter = getClusterCenter(el.second);
+        newClusterCenters.push_back(make_pair(clusterCenter, el.first));
+
+        // Calculate cluster radius
+        double clusterRadius = 0;
+        for (auto &entry : el.second) {
+            double sqrtDist = distance(entry, clusterCenter);
+            clusterRadius += sqrtDist * sqrtDist;
+        }
+        clusterRadius = sqrt(clusterRadius / (el.second.size() + 1));
+        newClusterSizes.push_back(clusterRadius);
     }
 
     // If cluster centers are the same, then the algorithm is finished
@@ -83,14 +93,4 @@ bool KMeans::doKMeans(const vector<PointClass> &trainingSet)
         clusterSizes = std::move(newClusterSizes);
     }
     return end;
-}
-
-Point KMeans::getClusterCenter(const std::vector<Point> &cluster)
-{
-    Point center;
-    for (auto& p : cluster) {
-        center += p;
-    }
-    center /= cluster.size();
-    return center;
 }
