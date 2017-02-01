@@ -9,7 +9,8 @@ SOURCES += App/main.cpp \
     Recognizers/NearestCentroid.cpp \
     Recognizers/LinearPredictorFunction.cpp \
     App/App.cpp \
-    Recognizers/KMeans.cpp
+    Recognizers/KMeans.cpp \
+    Recognizers/ThresholdBasedRecognizer.cpp
 
 HEADERS += \
     Recognizers/Recognizer.hpp \
@@ -18,4 +19,5 @@ HEADERS += \
     Recognizers/NearestCentroid.hpp \
     Recognizers/LinearPredictorFunction.hpp \
     App/App.hpp \
-    Recognizers/KMeans.hpp
+    Recognizers/KMeans.hpp \
+    Recognizers/ThresholdBasedRecognizer.hpp

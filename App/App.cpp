@@ -6,6 +6,7 @@
 #include "Recognizers/NearestCentroid.hpp"
 #include "Recognizers/NearestNeighbour.hpp"
 #include "Recognizers/KMeans.hpp"
+#include "Recognizers/ThresholdBasedRecognizer.hpp"
 
 using namespace std;
 
@@ -116,6 +117,8 @@ void App::executeMethod(const std::vector<string> &args)
         r = new LinearPredictorFunction(10); // FIXME
     } else if (method == "km") {
         r = new KMeans(2); // FIXME
+    } else if (method == "tb") {
+        r = new ThresholdBasedRecognizer(10.0); // FIXME
     }
 
     if (runDefault) {
