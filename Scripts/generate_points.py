@@ -25,28 +25,35 @@ def showHelp():
 def simple(npoints, noise, output):
     print("Enter kernel1:")
     k1 = (float(input()), float(input()))
-    print("Enter rad1:")
-    r1 = float(input())
+    print("Enter rad1_1 and rad2_2:")
+    r1_1, r1_2 = float(input()), float(input())
     print("Enter kernel2:")
     k2 = (float(input()), float(input()))
-    print("Enter rad2:")
-    r2 = float(input())
+    print("Enter rad2_1 and rad2_2:")
+    r2_1, r2_2 = float(input()), float(input())
+    # maxX = max(k1[0] + r1, k2[0] + r2)
+    # minX = min(k1[0] - r1, k2[0] - r2)
+    # maxY = max(k1[1] + r1, k2[1] + r2)
+    # minY = min(k1[1] - r1, k2[1] - r2)
+    # print("Range: {0}, {1} - {2}, {3}".format(minX, minY, maxX, maxY))
     points1 = list()
     points2 = list()
     for i in range(npoints):
-        pr1 = random.random() * r1  # number from 0 to radius1
+        pr1_1 = random.random() * r1_1  # number from 0 to radius1
+        pr1_2 = random.random() * r1_2  # number from 0 to radius1
         ang1 = random.random() * 2 * np.pi  # angle
         # Generate new point
-        point1 = (k1[0] + np.cos(ang1) * pr1, k1[1] + np.sin(ang1) * pr1)
+        point1 = (k1[0] + np.cos(ang1) * pr1_1, k1[1] + np.sin(ang1) * pr1_2)
         if random.random() > noise:  # Check if it's noise
             points1.append(point1)
         else:
             points2.append(point1)
 
-        pr2 = random.random() * r2  # number from 0 to radius1
+        pr2_1 = random.random() * r2_1  # number from 0 to radius1
+        pr2_2 = random.random() * r2_2  # number from 0 to radius1
         ang2 = random.random() * 2 * np.pi  # angle
         # Generate new point
-        point2 = (k2[0] + np.cos(ang2) * pr2, k2[1] + np.sin(ang2) * pr2)
+        point2 = (k2[0] + np.cos(ang2) * pr2_1, k2[1] + np.sin(ang2) * pr2_2)
         if random.random() > noise:  # Check if it's noise
             points2.append(point2)
         else:

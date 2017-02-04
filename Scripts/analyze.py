@@ -12,13 +12,19 @@ r1y = list()
 w1x = list()
 w1y = list()
 
+test = False
+if (len(sys.argv) > 2):
+    test = True
+
 f = open(sys.argv[1], 'r')
 for line in f:
     vals = line.split(' ')
     x = float(vals[0])
     y = float(vals[1])
+    right = True
     kind = int(vals[2])
-    right = int(vals[3]) == 1
+    if (not test):
+        right = int(vals[3]) == 1
     if kind == 0:
         if right:
             r0x.append(x)
