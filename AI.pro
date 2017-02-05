@@ -12,7 +12,8 @@ SOURCES += App/main.cpp \
     Recognizers/KMeans.cpp \
     Recognizers/ThresholdBasedRecognizer.cpp \
     Reductors/PCA.cpp \
-    Reductors/FakeReductor.cpp
+    Reductors/FakeReductor.cpp \
+    Reductors/ICA.cpp
 
 HEADERS += \
     App/App.hpp \
@@ -26,4 +27,5 @@ HEADERS += \
     Recognizers/ThresholdBasedRecognizer.hpp \
     Reductors/Reductor.hpp \
     Reductors/PCA.hpp \
-    Reductors/FakeReductor.hpp
+    Reductors/FakeReductor.hpp \
+    Reductors/ICA.hpp
