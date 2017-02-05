@@ -8,6 +8,7 @@
 #include "Recognizers/KMeans.hpp"
 #include "Recognizers/ThresholdBasedRecognizer.hpp"
 #include "Reductors/FakeReductor.hpp"
+#include "Reductors/ICA.hpp"
 #include "Reductors/PCA.hpp"
 
 using namespace std;
@@ -133,6 +134,8 @@ void App::executeMethod(const vector<string> &args, const string &reductorType)
     Reductor *reductor = nullptr;
     if (reductorType == "PCA") {
         reductor = new PCA;
+    } else if (reductorType == "ICA") {
+        reductor = new ICA;
     } else {
         reductor = new FakeReductor;
     }
