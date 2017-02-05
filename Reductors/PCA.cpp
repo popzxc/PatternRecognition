@@ -8,7 +8,7 @@ PCA::PCA()
 {
 }
 
-Reductor::Axis PCA::reduce(std::vector<PointClass> &data, Axis axis)
+Reductor::Axis PCA::reduce(vector<PointClass> &data, Axis axis)
 {
     // Load data to two vectors
     RowVectorXd x(data.size());
@@ -18,52 +18,22 @@ Reductor::Axis PCA::reduce(std::vector<PointClass> &data, Axis axis)
         y[i] = data[i].first.y;
     }
 
-    // Center both x and y
-    RowVectorXd xCentered = x.array() - x.mean();
-    RowVectorXd yCentered = y.array() - y.mean();
+    auto processed = whiten(x, y);
 
-    // Get covariance matrix
-    Matrix2d cov = getCovarianceMatrix(xCentered, yCentered);
-
-    // Find eigenvectors ang eigenvalues
-    EigenSolver<Matrix2d> es(cov);
-
-    // Find the axis we'll project on (if it wasn't set by user)
     if (axis == Axis::AUTO) {
-        auto v1 = abs(es.eigenvalues()[0]);
-        auto v2 = abs(es.eigenvalues()[1]);
-        bool x = v1 >= v2;
-        axis = x ? Axis::X : Axis::Y;
+        axis = processed.covarianceMatrix(0, 0) >= processed.covarianceMatrix(1, 1) ? Axis::X : Axis::Y;
     }
 
-
-    // Resulting matrix
-    MatrixXd res(2, x.size());
-    res.row(0) = xCentered;
-    res.row(1) = yCentered;
-
-    if (axis == Axis::X)
-    {
-        auto complexEigenVector = es.eigenvectors().col(0); // Get first eigenvector
-        RowVector2d eigenVector;
-        eigenVector << complexEigenVector[0].real(), complexEigenVector[1].real();
-
-        res = eigenVector * res;
-        for (auto i = 0; i < x.size(); ++i) {
-            data[i].first.x = res(0, i);
+    for (vector<PointClass>::size_type i = 0; i < data.size(); ++i) {
+        if (axis == Axis::X) {
+            data[i].first.x = processed.whitened(0, i);
             data[i].first.y = 0;
-        }
-    } else {
-        auto complexEigenVector = es.eigenvectors().col(1); // Get first eigenvector
-        RowVector2d eigenVector;
-        eigenVector << complexEigenVector[0].real(), complexEigenVector[1].real();
-
-        res = eigenVector * res;
-        for (auto i = 0; i < y.size(); ++i) {
-            data[i].first.y = res(0, i);
+        } else {
             data[i].first.x = 0;
+            data[i].first.y = processed.whitened(1, i);
         }
     }
+
     return axis;
 }
 
@@ -90,4 +60,35 @@ Matrix2d PCA::getCovarianceMatrix(const RowVectorXd &xCentered, const RowVectorX
     cov(1, 1) = disp / yCentered.size();
     cov(0, 1) = cov(1, 0) = (xCentered * yCentered.transpose()).sum() / (xCentered.size() * yCentered.size());
     return cov;
+}
+
+PCA::WhitenedData PCA::whiten(const RowVectorXd &x, const RowVectorXd &y)
+{
+    WhitenedData ret;
+
+    // Center both x and y
+    RowVectorXd xCentered = x.array() - x.mean();
+    RowVectorXd yCentered = y.array() - y.mean();
+
+    // Get covariance matrix
+    ret.covarianceMatrix = getCovarianceMatrix(xCentered, yCentered);
+
+    // Find eigenvectors ang eigenvalues
+    EigenSolver<Matrix2d> es(ret.covarianceMatrix);
+
+    // Resulting matrix
+    MatrixXd res(2, x.size());
+    res.row(0) = xCentered;
+    res.row(1) = yCentered;
+
+    auto complexEigenVector = es.eigenvectors().col(0); // Get first eigenvector
+    RowVector2d eigenVectors[2];
+    eigenVectors[0] << complexEigenVector[0].real(), complexEigenVector[1].real();
+    complexEigenVector = es.eigenvectors().col(1); // Get second eigenvector
+    eigenVectors[1] << complexEigenVector[0].real(), complexEigenVector[1].real();
+
+    ret.whitened.resize(2, xCentered.cols());
+    ret.whitened << eigenVectors[0] * res, eigenVectors[1] * res;
+
+    return ret;
 }
