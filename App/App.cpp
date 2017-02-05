@@ -7,6 +7,7 @@
 #include "Recognizers/NearestNeighbour.hpp"
 #include "Recognizers/KMeans.hpp"
 #include "Recognizers/ThresholdBasedRecognizer.hpp"
+#include "Reductors/FakeReductor.hpp"
 #include "Reductors/PCA.hpp"
 
 using namespace std;
@@ -53,8 +54,12 @@ int App::exec()
         output = args["--output"][0];
     }
 
+    string reductor = "";
+    if (args.find("--reductor") != args.end()) {
+        reductor = args["--reductor"][0];
+    }
 
-    executeMethod(method->second);
+    executeMethod(method->second, reductor);
 
     if (args.find("--analyze") != args.end()) {
         // FIXME
@@ -99,7 +104,7 @@ void App::showHelp()
          << endl;
 }
 
-void App::generateDataset(const std::vector<string> &args)
+void App::generateDataset(const vector<string> &args)
 {
     ostringstream command;
     for (auto &arg : args) {
@@ -108,30 +113,38 @@ void App::generateDataset(const std::vector<string> &args)
     system(command.str().c_str());
 }
 
-void App::executeMethod(const std::vector<string> &args)
+void App::executeMethod(const vector<string> &args, const string &reductorType)
 {
     const string &method = args[0];
 
-    Recognizer *r = nullptr;
+    Recognizer *recognizer = nullptr;
     if (method == "nn") {
-        r = new NearestNeighbour();
+        recognizer = new NearestNeighbour();
     } else if (method == "nc") {
-        r = new NearestCentroid();
+        recognizer = new NearestCentroid();
     } else if (method == "lpf") {
-        r = new LinearPredictorFunction(10); // FIXME
+        recognizer = new LinearPredictorFunction(10); // FIXME
     } else if (method == "km") {
-        r = new KMeans(2); // FIXME
+        recognizer = new KMeans(2); // FIXME
     } else if (method == "tb") {
-        r = new ThresholdBasedRecognizer(5.0); // FIXME
+        recognizer = new ThresholdBasedRecognizer(5.0); // FIXME
+    }
+
+    Reductor *reductor = nullptr;
+    if (reductorType == "PCA") {
+        reductor = new PCA;
+    } else {
+        reductor = new FakeReductor;
     }
 
     if (runDefault) {
-        defaultCheck(*r);
+        defaultCheck(*recognizer);
     } else {
-        mainCheck(*r, trFile, chFile, output);
+        mainCheck(*recognizer, *reductor, trFile, chFile, output);
     }
 
-    delete r;
+    delete reductor;
+    delete recognizer;
 }
 
 vector<PointClass> App::readFile(string name)
@@ -196,21 +209,12 @@ void App::defaultCheck(Recognizer &r)
     runCheck(r, exampleTrainSet, exampleCheckSet, &cout);
 }
 
-void App::mainCheck(Recognizer &r, string trainFile, string checkFile, string outputFile)
+void App::mainCheck(Recognizer &recognizer, Reductor &reductor, string trainFile, string checkFile, string outputFile)
 {
-    PCA pca;
     auto trainingSet = readFile(trainFile);
-    auto axis = pca.reduce(trainingSet);
-    ofstream outputX("reduced.tmp");
-    for (auto &p : trainingSet) {
-        outputX << p.first.x << " " << p.first.y << " " << p.second << endl;
-    }
+    auto axis = reductor.reduce(trainingSet);
     auto points = readFile(checkFile);
-    pca.reduce(points, axis);
-    ofstream outputXX("reduced2.tmp");
-    for (auto &p : points) {
-        outputXX << p.first.x << " " << p.first.y << " " << p.second << endl;
-    }
+    reductor.reduce(points, axis);
     ofstream output(outputFile);
-    runCheck(r, trainingSet, points, &output);
+    runCheck(recognizer, trainingSet, points, &output);
 }

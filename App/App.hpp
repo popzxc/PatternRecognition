@@ -4,6 +4,7 @@
 #include <map>
 #include <string>
 #include "Recognizers/Recognizer.hpp"
+#include "Reductors/Reductor.hpp"
 
 class App
 {
@@ -13,14 +14,15 @@ public:
 private:
     void showHelp();
     void generateDataset(const std::vector<std::string> &args);
-    void executeMethod(const std::vector<std::string> &args);
+    void executeMethod(const std::vector<std::string> &args, const std::string &reductorType);
 
     std::vector<PointClass> readFile(std::string name);
 
     void runCheck(Recognizer &r, std::vector<PointClass> &trSet,
                   std::vector<PointClass> &points, std::ostream *out = nullptr);
     void defaultCheck(Recognizer &r);
-    void mainCheck(Recognizer &r, std::string trainFile, std::string checkFile, std::string outputFile);
+    void mainCheck(Recognizer &r, Reductor &reductor, std::string trainFile,
+                   std::string checkFile, std::string outputFile);
 
     std::map<std::string, std::vector<std::string> > args;
     std::string trFile;
