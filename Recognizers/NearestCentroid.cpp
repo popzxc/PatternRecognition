@@ -31,13 +31,15 @@ void NearestCentroid::train(const vector<PointClass> &trainingSet)
             }
         }
         clusterSizes[i] = sqrt(clusterSizes[i] / counts[i]);
+        std::cout << "Cluster " << i << " size " << clusterSizes[i] << std::endl;
+        std::cout << "center: " << etalons[i].first.x << " " << etalons[i].first.y << std::endl;
     }
 }
 
 Class NearestCentroid::recognize(Point point) const
 {
-    Class retval = Class::A;
-    double minDistance = distance(etalons[0].first, point);
+    Class retval = etalons[0].second;
+    double minDistance = distance(etalons[0].first, point) / clusterSizes[0]; // FIXME check for 0
     for (vector<size_t>::size_type i = 0; i < etalons.size(); ++i) {
         if (clusterSizes[i] == 0.0)
             continue;

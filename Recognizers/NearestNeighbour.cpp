@@ -12,7 +12,7 @@ Class NearestNeighbour::recognize(Point point) const
     if (set.empty()) {
         return Class::A;
     }
-    Class retval = Class::A;
+    Class retval = set[0].second;
     double minDistance = distance(set[0].first, point);
     for (vector<PointClass>::size_type i = 1; i < set.size(); ++i) {
         double currentDistance = distance(set[i].first, point);

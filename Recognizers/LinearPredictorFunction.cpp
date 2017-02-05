@@ -7,6 +7,9 @@ using namespace Eigen;
 
 double legendrePolynomial(int n, double x)
 {
+    if (n < 0) {
+        while (true);
+    }
     if (n == 0) {
         return static_cast<double>(1);
     } else if (n == 1) {
@@ -82,6 +85,6 @@ Class LinearPredictorFunction::recognize(Point point) const
 void LinearPredictorFunction::fillCoeffs(Point p, std::vector<double> &coefs) const
 {
     for (int i = 0; i < nFeatures; ++i) {
-        coefs[i] = phi(p.x, pows[i].first) * phi(p.y, pows[i].second);
+        coefs[i] = phi(pows[i].first, p.x) * phi(pows[i].second, p.y);
     }
 }
