@@ -31,8 +31,6 @@ void NearestCentroid::train(const vector<PointClass> &trainingSet)
             }
         }
         clusterSizes[i] = sqrt(clusterSizes[i] / counts[i]);
-        std::cout << "Cluster " << i << " size " << clusterSizes[i] << std::endl;
-        std::cout << "center: " << etalons[i].first.x << " " << etalons[i].first.y << std::endl;
     }
 }
 

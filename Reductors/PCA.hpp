@@ -17,7 +17,7 @@ public:
         Eigen::Matrix2d covarianceMatrix;
     };
 
-    static WhitenedData whiten(const Eigen::RowVectorXd &xCentered, const Eigen::RowVectorXd &y);
+    static WhitenedData whiten(const Eigen::RowVectorXd &x, const Eigen::RowVectorXd &y);
     static Eigen::Matrix2d getCovarianceMatrix(const Eigen::RowVectorXd &xCentered, const Eigen::RowVectorXd &yCentered);
 };
 

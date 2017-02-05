@@ -18,22 +18,25 @@ Reductor::Axis PCA::reduce(vector<PointClass> &data, Axis axis)
         y[i] = data[i].first.y;
     }
 
+    // Get centered and transformed according to max dispersion directions dataset (with covariance matrix)
     auto processed = whiten(x, y);
 
+    // If user didn't select axis, detect one with the max dispersion value
     if (axis == Axis::AUTO) {
         axis = processed.covarianceMatrix(0, 0) >= processed.covarianceMatrix(1, 1) ? Axis::X : Axis::Y;
     }
 
+    // Lambda to project data on chosen axis
+    auto fillPointFromWhitened = [&axis, &processed](auto i) {
+        return (axis == Axis::X) ? Point(processed.whitened(0, i), 0) : Point(0, processed.whitened(1, i));
+    };
+
+    // Fill the vector with output values
     for (vector<PointClass>::size_type i = 0; i < data.size(); ++i) {
-        if (axis == Axis::X) {
-            data[i].first.x = processed.whitened(0, i);
-            data[i].first.y = 0;
-        } else {
-            data[i].first.x = 0;
-            data[i].first.y = processed.whitened(1, i);
-        }
+        data[i].first = fillPointFromWhitened(i);
     }
 
+    // Return choosen axis
     return axis;
 }
 
@@ -81,12 +84,14 @@ PCA::WhitenedData PCA::whiten(const RowVectorXd &x, const RowVectorXd &y)
     res.row(0) = xCentered;
     res.row(1) = yCentered;
 
+    // New axes
     auto complexEigenVector = es.eigenvectors().col(0); // Get first eigenvector
     RowVector2d eigenVectors[2];
     eigenVectors[0] << complexEigenVector[0].real(), complexEigenVector[1].real();
     complexEigenVector = es.eigenvectors().col(1); // Get second eigenvector
     eigenVectors[1] << complexEigenVector[0].real(), complexEigenVector[1].real();
 
+    // Project centered data on new axes
     ret.whitened.resize(2, xCentered.cols());
     ret.whitened << eigenVectors[0] * res, eigenVectors[1] * res;
 
