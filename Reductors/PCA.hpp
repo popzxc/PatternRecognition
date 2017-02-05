@@ -9,7 +9,7 @@ public:
     PCA();
     virtual ~PCA() = default;
 
-    std::vector<Point> reduce(const std::vector<Point> &data) override;
+    Axis reduce(std::vector<PointClass> &data, Axis axis = Axis::AUTO) override;
 };
 
 #endif // PCA_HPP

@@ -6,9 +6,15 @@
 
 class Reductor {
 public:
+    enum class Axis {
+        AUTO,
+        X,
+        Y
+    };
+
     virtual ~Reductor() = default;
 
-    virtual std::vector<Point> reduce(const std::vector<Point> &data) = 0;
+    virtual Axis reduce(std::vector<PointClass> &data, Axis axis = Axis::AUTO) = 0;
 };
 
 #endif // REDUCTOR_HPP

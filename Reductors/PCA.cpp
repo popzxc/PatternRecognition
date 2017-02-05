@@ -10,14 +10,14 @@ PCA::PCA()
 
 }
 
-vector<Point> PCA::reduce(const vector<Point> &data)
+Reductor::Axis PCA::reduce(std::vector<PointClass> &data, Axis axis)
 {
     // Load data to two vectors
     vector<double> xV(data.size());
     vector<double> yV(data.size());
     for (vector<Point>::size_type i = 0; i < data.size(); ++i) {
-        xV[i] = data[i].x;
-        yV[i] = data[i].y;
+        xV[i] = data[i].first.x;
+        yV[i] = data[i].first.y;
     }
 
     // Map std vector to eigen vector
@@ -25,8 +25,10 @@ vector<Point> PCA::reduce(const vector<Point> &data)
     Map<RowVectorXd> y(yV.data(), yV.size());
 
     // Center both x and y
-    RowVectorXd xCentered = x.array() - x.mean();
-    RowVectorXd yCentered = y.array() - y.mean();
+    auto xMean = x.mean();
+    auto yMean = y.mean();
+    RowVectorXd xCentered = x.array() - xMean;
+    RowVectorXd yCentered = y.array() - yMean;
 
 
     /* At this point expected value of x and y is 0
@@ -42,21 +44,38 @@ vector<Point> PCA::reduce(const vector<Point> &data)
     cov(1, 1) = yCentered.sum() * yCentered.sum() / yCentered.size();
     cov(0, 1) = cov(1, 0) = (xCentered * yCentered.transpose()).sum() / (xCentered.size() * yCentered.size());
 
-    EigenSolver<Matrix2d> es(cov);
+    MatrixXd res(2, x.size());
+    res.row(0) = xCentered;
+    res.row(1) = yCentered;
 
-    // Compare new axis sizes
-    if (es.eigenvalues()[0].real() > es.eigenvalues()[1].real()) {
+    EigenSolver<Matrix2d> es(cov);
+    if (axis == Axis::AUTO) {
+        bool x = abs(es.eigenvalues()[0].real()) > abs(es.eigenvalues()[1].real());
+        axis = x ? Axis::X : Axis::Y;
+    }
+    if (axis == Axis::X) {
         // X axis size is greater than Y
-        auto complexEigenVector = es.eigenvectors()[0];
+        auto complexEigenVector = es.eigenvectors().col(0); // Get first eigenvector
         RowVector2d eigenVector;
-        eigenVector << complexEigenVector.real(), complexEigenVector.imag();
-        RowVector2d xRes = xCentered.dot(eigenVector);
-        y.fill(0);
+        eigenVector << complexEigenVector[0].real(), complexEigenVector[1].real();
+
+        res = eigenVector * res;
+        for (auto i = 0; i < x.size(); ++i) {
+            data[i].first.x = res(0, i);
+            data[i].first.y = 0;
+        }
     } else {
         // Y axis size is greater than X
-//        y = yCentered.dot(es.eigenvectors()[1]);
-        y.fill(0);
-    }
+        auto complexEigenVector = es.eigenvectors().col(1); // Get first eigenvector
+        RowVector2d eigenVector;
+        eigenVector << complexEigenVector[0].real(), complexEigenVector[1].real();
 
-    return data; // Not so good, meh
+        res = eigenVector * res;
+        // Project anyway on X axis
+        for (auto i = 0; i < x.size(); ++i) {
+            data[i].first.y = res(0, i);
+            data[i].first.x = 0;
+        }
+    }
+    return axis; // Not so good, meh
 }

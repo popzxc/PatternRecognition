@@ -7,6 +7,7 @@
 #include "Recognizers/NearestNeighbour.hpp"
 #include "Recognizers/KMeans.hpp"
 #include "Recognizers/ThresholdBasedRecognizer.hpp"
+#include "Reductors/PCA.hpp"
 
 using namespace std;
 
@@ -110,6 +111,7 @@ void App::generateDataset(const std::vector<string> &args)
 void App::executeMethod(const std::vector<string> &args)
 {
     const string &method = args[0];
+
     Recognizer *r = nullptr;
     if (method == "nn") {
         r = new NearestNeighbour();
@@ -120,7 +122,7 @@ void App::executeMethod(const std::vector<string> &args)
     } else if (method == "km") {
         r = new KMeans(2); // FIXME
     } else if (method == "tb") {
-        r = new ThresholdBasedRecognizer(10.0); // FIXME
+        r = new ThresholdBasedRecognizer(5.0); // FIXME
     }
 
     if (runDefault) {
@@ -158,7 +160,7 @@ void App::runCheck(Recognizer &r, vector<PointClass> &trSet,
         auto guess = r.recognize(point.first);
         bool correct = real == guess;
         if (out) {
-            *out << point.first << " " << static_cast<size_t>(point.second) << " " << correct << endl;
+            *out << point.first << " " << point.second << " " << correct << endl;
         }
     }
 }
@@ -196,8 +198,19 @@ void App::defaultCheck(Recognizer &r)
 
 void App::mainCheck(Recognizer &r, string trainFile, string checkFile, string outputFile)
 {
+    PCA pca;
     auto trainingSet = readFile(trainFile);
+    auto axis = pca.reduce(trainingSet);
+    ofstream outputX("reduced.tmp");
+    for (auto &p : trainingSet) {
+        outputX << p.first.x << " " << p.first.y << " " << p.second << endl;
+    }
     auto points = readFile(checkFile);
+    pca.reduce(points, axis);
+    ofstream outputXX("reduced2.tmp");
+    for (auto &p : points) {
+        outputXX << p.first.x << " " << p.first.y << " " << p.second << endl;
+    }
     ofstream output(outputFile);
     runCheck(r, trainingSet, points, &output);
 }
