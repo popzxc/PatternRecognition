@@ -11,7 +11,8 @@ SOURCES += App/main.cpp \
     Recognizers/LinearPredictorFunction.cpp \
     Recognizers/KMeans.cpp \
     Recognizers/ThresholdBasedRecognizer.cpp \
-    Reductors/PCA.cpp
+    Reductors/PCA.cpp \
+    Reductors/FakeReductor.cpp
 
 HEADERS += \
     App/App.hpp \
@@ -24,4 +25,5 @@ HEADERS += \
     Recognizers/KMeans.hpp \
     Recognizers/ThresholdBasedRecognizer.hpp \
     Reductors/Reductor.hpp \
-    Reductors/PCA.hpp
+    Reductors/PCA.hpp \
+    Reductors/FakeReductor.hpp
