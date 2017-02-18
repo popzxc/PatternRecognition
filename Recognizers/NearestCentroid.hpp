@@ -17,6 +17,12 @@ public:
     {
         return "Nearest centroid method";
     }
+    std::string shortName() const override
+    {
+        return "NC";
+    }
+
+    void setAdditionalInfo(std::ostream &ostr) override;
 
 private:
     std::vector<PointClass> etalons;

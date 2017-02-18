@@ -1,5 +1,7 @@
 #include <sstream>
 #include <cmath>
+#include <ctime>
+#include <cstdio>
 #include <fstream>
 #include "App.hpp"
 #include "Recognizers/LinearPredictorFunction.hpp"
@@ -13,7 +15,7 @@
 
 using namespace std;
 
-App::App(int argc, char *argv[])
+App::App(int argc, char *argv[]) : runDefault(false), runAuto(false)
 {
     auto i = 0;
     const char *curArg;
@@ -48,6 +50,8 @@ int App::exec()
     // FIXME cludge
     if (args.find("--default") != args.end()) {
         runDefault = true;
+    } else if (args.find("--auto") != args.end()) {
+        runAuto = true;
     } else {
         runDefault = false;
         trFile = args["--input"][0];
@@ -108,6 +112,7 @@ void App::showHelp()
 void App::generateDataset(const vector<string> &args)
 {
     ostringstream command;
+    command << "./generate_points.py ";
     for (auto &arg : args) {
         command << arg << " ";
     }
@@ -142,6 +147,8 @@ void App::executeMethod(const vector<string> &args, const string &reductorType)
 
     if (runDefault) {
         defaultCheck(*recognizer);
+    } else if (runAuto) {
+        autoCheck(*recognizer);
     } else {
         mainCheck(*recognizer, *reductor, trFile, chFile, output);
     }
@@ -171,6 +178,7 @@ void App::runCheck(Recognizer &r, vector<PointClass> &trSet,
               vector<PointClass> &points, ostream *out)
 {
     r.train(trSet);
+    r.setAdditionalInfo(*out);
     for (auto &point : points) {
         auto real = point.second;
         auto guess = r.recognize(point.first);
@@ -210,6 +218,248 @@ void App::defaultCheck(Recognizer &r)
     };
     cout << r.name() << endl;
     runCheck(r, exampleTrainSet, exampleCheckSet, &cout);
+}
+
+void App::autoCheck(Recognizer &r)
+{
+    // Preparation
+    ofstream timeStats(r.shortName() + "_stats.csv");
+    timeStats << fixed; // Only fixed-point
+    string command;
+    string trainFile = "~temp_out0.txt";
+    string checkFile = "~temp_out1.txt";
+    command = "./generate_points.py simple 50 0.0 ~temp_out0.txt ~temp_out1.txt";
+    ofstream params("params.txt");
+    params << "0.0 0.0\n5.0 5.0\n10.0 10.0\n5.0 5.0\n";
+    params.close();
+    system(command.c_str());
+    auto trainingSet = readFile(trainFile);
+    auto points = readFile(checkFile);
+
+    // First check: two simple circles without noise
+    string resName = "res.tst";
+    string analyzeCommand = "./analyze.py ";
+    analyzeCommand += "res.tst ";
+    analyzeCommand += r.shortName() + "_0.png";
+    int analyzeFileLetterNum = analyzeCommand.length() - 5;
+    ofstream res(resName);
+    runCheck(r, trainingSet, points, &res);
+    res.close();
+    system(analyzeCommand.c_str());
+
+    // Second check: two simple circles with 10% noise
+    command = "./generate_points.py simple 50 0.1 ~temp_out0.txt ~temp_out1.txt";
+    params.open("params.txt");
+    params << "0.0 0.0\n5.0 5.0\n10.0 10.0\n5.0 5.0\n";
+    params.close();
+    system(command.c_str());
+    trainingSet = readFile(trainFile);
+    points = readFile(checkFile);
+
+    res.open(resName);
+    runCheck(r, trainingSet, points, &res);
+    res.close();
+    analyzeCommand[analyzeFileLetterNum] = '1';
+    system(analyzeCommand.c_str());
+
+    // Third check: two simple circles with 20% noise
+    command = "./generate_points.py simple 50 0.2 ~temp_out0.txt ~temp_out1.txt";
+    params.open("params.txt");
+    params << "0.0 0.0\n5.0 5.0\n10.0 10.0\n5.0 5.0\n";
+    params.close();
+    system(command.c_str());
+    trainingSet = readFile(trainFile);
+    points = readFile(checkFile);
+
+    res.open(resName);
+    runCheck(r, trainingSet, points, &res);
+    res.close();
+    analyzeCommand[analyzeFileLetterNum] = '2';
+    system(analyzeCommand.c_str());
+
+    // Fourth check: two ellipses without noise
+    command = "./generate_points.py simple 150 0.0 ~temp_out0.txt ~temp_out1.txt";
+    params.open("params.txt");
+    params << "0.0 0.0\n7.0 2.0\n0.0 15.0\n3.0 5.0\n";
+    params.close();
+    system(command.c_str());
+    trainingSet = readFile(trainFile);
+    points = readFile(checkFile);
+
+    res.open(resName);
+    runCheck(r, trainingSet, points, &res);
+    res.close();
+    analyzeCommand[analyzeFileLetterNum] = '3';
+    system(analyzeCommand.c_str());
+
+    // Fifth check: two ellipses with 10% noise
+    command = "./generate_points.py simple 150 0.1 ~temp_out0.txt ~temp_out1.txt";
+    params.open("params.txt");
+    params << "0.0 0.0\n7.0 2.0\n0.0 15.0\n3.0 5.0\n";
+    params.close();
+    system(command.c_str());
+    trainingSet = readFile(trainFile);
+    points = readFile(checkFile);
+
+    res.open(resName);
+    runCheck(r, trainingSet, points, &res);
+    res.close();
+    analyzeCommand[analyzeFileLetterNum] = '4';
+    system(analyzeCommand.c_str());
+
+    // Sixth check: two ellipses with 20% noise
+    command = "./generate_points.py simple 150 0.2 ~temp_out0.txt ~temp_out1.txt";
+    params.open("params.txt");
+    params << "0.0 0.0\n7.0 2.0\n0.0 15.0\n3.0 5.0\n";
+    params.close();
+    system(command.c_str());
+    trainingSet = readFile(trainFile);
+    points = readFile(checkFile);
+
+    res.open(resName);
+    runCheck(r, trainingSet, points, &res);
+    res.close();
+    analyzeCommand[analyzeFileLetterNum] = '5';
+    system(analyzeCommand.c_str());
+
+    // Seventh check: two brackets
+    command = "./generate_points.py brackets 160 0.0 ~temp_out0.txt ~temp_out1.txt";
+    system(command.c_str());
+    trainingSet = readFile(trainFile);
+    points = readFile(checkFile);
+
+    res.open(resName);
+    runCheck(r, trainingSet, points, &res);
+    res.close();
+    analyzeCommand[analyzeFileLetterNum] = '6';
+    system(analyzeCommand.c_str());
+
+    // Second check: two simple circles without noise
+    command = "./generate_points.py simple 50 0.0 ~temp_out0.txt ~temp_out1.txt";
+    params.open("params.txt");
+    params << "0.0 0.0\n5.0 5.0\n4.0 4.0\n5.0 5.0\n";
+    params.close();
+    system(command.c_str());
+    trainingSet = readFile(trainFile);
+    points = readFile(checkFile);
+
+    res.open(resName);
+    runCheck(r, trainingSet, points, &res);
+    res.close();
+    analyzeCommand[analyzeFileLetterNum] = '7';
+    system(analyzeCommand.c_str());
+
+    // Time checks
+    clock_t startTime, endTime;
+    double trainTime, recTime;
+    int N_ITERS = 100;
+
+    // 50 els
+    command = "./generate_points.py simple 50 0.0 ~temp_out0.txt ~temp_out1.txt";
+    system(command.c_str());
+    trainingSet = readFile(trainFile);
+    points = readFile(checkFile);
+
+    startTime = clock();
+    for (int i = 0; i < N_ITERS; ++i) {
+        r.train(trainingSet);
+    }
+    endTime = clock();
+    trainTime = static_cast<double>(endTime - startTime) * 1000.0 / (N_ITERS * CLOCKS_PER_SEC);
+
+    startTime = clock();
+    for (int i = 0; i < N_ITERS; ++i) {
+        r.recognize(trainingSet[0].first);
+    }
+    endTime = clock();
+    recTime = static_cast<double>(endTime - startTime) * 1000.0 / (N_ITERS * CLOCKS_PER_SEC);
+    timeStats << "50;" << trainTime << ";" << recTime << endl;
+
+    // 200 els
+    N_ITERS = 50;
+    command = "./generate_points.py simple 200 0.0 ~temp_out0.txt ~temp_out1.txt";
+    system(command.c_str());
+    trainingSet = readFile(trainFile);
+    points = readFile(checkFile);
+
+    startTime = clock();
+    for (int i = 0; i < N_ITERS; ++i) {
+        r.train(trainingSet);
+    }
+    endTime = clock();
+    trainTime = static_cast<double>(endTime - startTime) * 1000.0 / (N_ITERS * CLOCKS_PER_SEC);
+
+    startTime = clock();
+    for (int i = 0; i < N_ITERS; ++i) {
+        r.recognize(trainingSet[0].first);
+    }
+    endTime = clock();
+    recTime = static_cast<double>(endTime - startTime) * 1000.0 / (N_ITERS * CLOCKS_PER_SEC);
+    timeStats << "200;" << trainTime << ";" << recTime << endl;
+
+    // 500 els
+    N_ITERS = 10;
+    command = "./generate_points.py simple 500 0.0 ~temp_out0.txt ~temp_out1.txt";
+    system(command.c_str());
+    trainingSet = readFile(trainFile);
+    points = readFile(checkFile);
+
+    startTime = clock();
+    for (int i = 0; i < N_ITERS; ++i) {
+        r.train(trainingSet);
+    }
+    endTime = clock();
+    trainTime = static_cast<double>(endTime - startTime) * 1000.0 / (N_ITERS * CLOCKS_PER_SEC);
+
+    startTime = clock();
+    for (int i = 0; i < N_ITERS; ++i) {
+        r.recognize(trainingSet[0].first);
+    }
+    endTime = clock();
+    recTime = static_cast<double>(endTime - startTime) * 1000.0 / (N_ITERS * CLOCKS_PER_SEC);
+    timeStats << "500;" << trainTime << ";" << recTime << endl;
+
+    // 1000 els
+    command = "./generate_points.py simple 1000 0.0 ~temp_out0.txt ~temp_out1.txt";
+    system(command.c_str());
+    trainingSet = readFile(trainFile);
+    points = readFile(checkFile);
+
+    startTime = clock();
+    for (int i = 0; i < N_ITERS; ++i) {
+        r.train(trainingSet);
+    }
+    endTime = clock();
+    trainTime = static_cast<double>(endTime - startTime) * 1000.0 / (N_ITERS * CLOCKS_PER_SEC);
+
+    startTime = clock();
+    for (int i = 0; i < N_ITERS; ++i) {
+        r.recognize(trainingSet[0].first);
+    }
+    endTime = clock();
+    recTime = static_cast<double>(endTime - startTime) * 1000.0 / (N_ITERS * CLOCKS_PER_SEC);
+    timeStats << "1000;" << trainTime << ";" << recTime << endl;
+
+    // 5000 els
+    command = "./generate_points.py simple 5000 0.0 ~temp_out0.txt ~temp_out1.txt";
+    system(command.c_str());
+    trainingSet = readFile(trainFile);
+    points = readFile(checkFile);
+
+    startTime = clock();
+    for (int i = 0; i < N_ITERS; ++i) {
+        r.train(trainingSet);
+    }
+    endTime = clock();
+    trainTime = static_cast<double>(endTime - startTime) * 1000.0 / (N_ITERS * CLOCKS_PER_SEC);
+
+    startTime = clock();
+    for (int i = 0; i < N_ITERS; ++i) {
+        r.recognize(trainingSet[0].first);
+    }
+    endTime = clock();
+    recTime = static_cast<double>(endTime - startTime) * 1000.0 / (N_ITERS * CLOCKS_PER_SEC);
+    timeStats << "5000;" << trainTime << ";" << recTime << endl;
 }
 
 void App::mainCheck(Recognizer &recognizer, Reductor &reductor, string trainFile, string checkFile, string outputFile)

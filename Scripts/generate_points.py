@@ -23,14 +23,20 @@ def showHelp():
 
 
 def simple(npoints, noise, output):
-    print("Enter kernel1:")
-    k1 = (float(input()), float(input()))
-    print("Enter rad1_1 and rad2_2:")
-    r1_1, r1_2 = float(input()), float(input())
-    print("Enter kernel2:")
-    k2 = (float(input()), float(input()))
-    print("Enter rad2_1 and rad2_2:")
-    r2_1, r2_2 = float(input()), float(input())
+    # print("Enter kernel1:")
+    params = open("params.txt")
+    l = params.readline().split(' ')
+    # print("Enter kernel1:")
+    k1 = (float(l[0]), float(l[1]))
+    # print("Enter rad1_1 and rad2_2:")
+    l = params.readline().split(' ')
+    r1_1, r1_2 = (float(l[0]), float(l[1]))
+    # print("Enter kernel2:")
+    l = params.readline().split(' ')
+    k2 = (float(l[0]), float(l[1]))
+    # print("Enter rad2_1 and rad2_2:")
+    l = params.readline().split(' ')
+    r2_1, r2_2 = (float(l[0]), float(l[1]))
     # maxX = max(k1[0] + r1, k2[0] + r2)
     # minX = min(k1[0] - r1, k2[0] - r2)
     # maxY = max(k1[1] + r1, k2[1] + r2)
@@ -121,21 +127,23 @@ def circle(npoints, noise, output):
     return
 
 
-if len(sys.argv) != 5:
+if len(sys.argv) < 5:
     showHelp()
     sys.exit()
 
 ptype = sys.argv[1].lower()
 npoints = int(sys.argv[2])
 noise = float(sys.argv[3])
-output = sys.argv[4]
 random.seed()
 
-if ptype == 'simple':
-    simple(npoints, noise, output)
-elif ptype == 'brackets':
-    brackets(npoints, noise, output)
-elif ptype == 'circle':
-    circle(npoints, noise, output)
-else:
-    showHelp()
+for i in range(4, len(sys.argv)):
+    output = sys.argv[i]
+    if ptype == 'simple':
+        simple(npoints, noise, output)
+    elif ptype == 'brackets':
+        brackets(npoints, noise, output)
+    elif ptype == 'circle':
+        circle(npoints, noise, output)
+    else:
+        showHelp()
+        sys.exit()

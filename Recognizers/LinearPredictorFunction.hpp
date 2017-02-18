@@ -21,7 +21,10 @@ public:
     {
         return "Linear predictor method";
     }
-
+    std::string shortName() const override
+    {
+        return "LPF";
+    }
 private:
     int nFeatures;
     Eigen::VectorXd coefs;

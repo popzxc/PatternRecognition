@@ -12,6 +12,10 @@ NearestCentroid::NearestCentroid()
 void NearestCentroid::train(const vector<PointClass> &trainingSet)
 {
     vector<size_t> counts(etalons.size());
+    for (vector<size_t>::size_type i = 0; i < etalons.size(); ++i) {
+        etalons[i] = { Point(), Class::A };
+        counts[i] = 0;
+    }
     for (auto &entry : trainingSet) {
         etalons[static_cast<size_t>(entry.second)].first += entry.first;
         etalons[static_cast<size_t>(entry.second)].second = entry.second;
@@ -48,4 +52,9 @@ Class NearestCentroid::recognize(Point point) const
         }
     }
     return retval;
+}
+
+void NearestCentroid::setAdditionalInfo(std::ostream &ostr)
+{
+    ostr << "NC " << etalons[0].first << " " << etalons[1].first << std::endl;
 }

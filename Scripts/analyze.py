@@ -3,6 +3,9 @@
 import matplotlib.pyplot as plt
 import sys
 
+my_dpi = 96
+plt.figure(figsize=(400/my_dpi, 400/my_dpi), dpi=my_dpi)
+
 r0x = list()
 r0y = list()
 w0x = list()
@@ -13,10 +16,14 @@ w1x = list()
 w1y = list()
 
 test = False
-if (len(sys.argv) > 2):
+if (len(sys.argv) > 3):
     test = True
 
 f = open(sys.argv[1], 'r')
+firstline = f.readline().split(' ')
+
+outFile = sys.argv[2]
+
 for line in f:
     vals = line.split(' ')
     x = float(vals[0])
@@ -50,13 +57,28 @@ if len(w0x) + len(w0y) > len(r0x) + len(r0y) \
 maxX = max(r0x + w0x + r1x + w1x)
 maxY = max(r0y + w0y + r1y + w1x)
 
-# if (sys.argc == 3):
-#     f = open(sys.argv[1], 'r')
-#     vals = line.split(' ')
-#     ncoefs = len(vals)
-    # for x in range()
-
+outStatName = outFile.split('_')[0] + "_correctness.csv"
+# clear out file if this is _0.png (first) file
+fileMode = 'a' if outFile.split('_')[1][0] != '0' else 'w'
+outStatFile = open(outStatName, fileMode)
+# number of right guesses, total number, percent
+rights = len(r0x) + len(r1x) - 1
+total = rights + len(w0x) + len(w1x)
+percent = float(rights) * 100 / float(total)
+outStatFile.write("{0};{1};{2}\n".format(rights, total, percent))
 
 plt.plot(r0x, r0y, 'bo', w0x, w0y, 'ro', r1x, r1y, 'gs', w1x, w1y, 'rs')
-plt.show(block=True)
 
+if firstline[0] == "NC":
+    # Nearest centroid
+    # First center
+    plt.plot(float(firstline[1]), float(firstline[2]),
+             '*', ms=15, mec='k', mew=1, c="#2222ff")
+    # Second center
+    plt.plot(float(firstline[3]), float(firstline[4]),
+             '*', ms=15, mec='k', mew=1, c="#22ff22")
+
+if test:
+    plt.show(block=True)
+else:
+    plt.savefig(outFile, dpi=my_dpi)

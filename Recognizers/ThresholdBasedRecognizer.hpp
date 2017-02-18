@@ -17,6 +17,11 @@ public:
     {
         return "Threshold based recognizer";
     }
+
+    std::string shortName() const override
+    {
+        return "TBR";
+    }
 private:
     double threshold;
     std::vector<Point> clusterCenters;

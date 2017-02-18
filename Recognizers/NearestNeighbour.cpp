@@ -23,3 +23,8 @@ Class NearestNeighbour::recognize(Point point) const
     }
     return retval;
 }
+
+void NearestNeighbour::setAdditionalInfo(std::ostream &ostr)
+{
+    ostr << "NN" << std::endl;
+}

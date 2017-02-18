@@ -18,6 +18,10 @@ public:
     {
         return "K-means";
     }
+    std::string shortName() const override
+    {
+        return "KM";
+    }
 private:
     bool doKMeans(const std::vector<PointClass> &trainingSet);
 

@@ -16,6 +16,13 @@ public:
         return "Nearest neighbour method";
     }
 
+    std::string shortName() const override
+    {
+        return "NN";
+    }
+
+    void setAdditionalInfo(std::ostream &ostr) override;
+
 private:
     std::vector<PointClass> set;
 };
