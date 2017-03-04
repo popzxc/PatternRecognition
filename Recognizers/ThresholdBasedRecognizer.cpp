@@ -54,3 +54,15 @@ Class ThresholdBasedRecognizer::recognize(Point point) const
     }
     return retClass;
 }
+
+void ThresholdBasedRecognizer::setAdditionalInfo(ostream &ostr)
+{
+    ostr << shortName() << " " << clusterCenters.size() << " 0 ";
+    for (vector<Point>::size_type i = 0; i < clusterCenters.size(); ++i) {
+        ostr << clusterCenters[i] << " " << threshold;
+        if (i != clusterCenters.size() - 1) {
+            ostr << " ";
+        }
+    }
+    ostr << endl;
+}

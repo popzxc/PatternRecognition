@@ -22,6 +22,8 @@ public:
     {
         return "TBR";
     }
+
+    void setAdditionalInfo(std::ostream &ostr) override;
 private:
     double threshold;
     std::vector<Point> clusterCenters;

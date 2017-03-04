@@ -11,7 +11,7 @@ double legendrePolynomial(int n, double x)
         while (true);
     }
     if (n == 0) {
-        return static_cast<double>(1);
+        return 1.0;
     } else if (n == 1) {
         return x;
     } else {
@@ -79,10 +79,19 @@ Class LinearPredictorFunction::recognize(Point point) const
     vector<double> pointCoefs(nFeatures);
     fillCoeffs(point, pointCoefs);
     double res = coefs.dot(Map<RowVectorXd>(pointCoefs.data(), nFeatures));
-    return (res > 0.0) ? Class::A : Class::B;
+    return (res >= 0.0) ? Class::A : Class::B;
 }
 
-void LinearPredictorFunction::fillCoeffs(Point p, std::vector<double> &coefs) const
+void LinearPredictorFunction::setAdditionalInfo(ostream &ostr)
+{
+    ostr << shortName() << " ";
+    for (int i = 0; i < nFeatures; ++i) {
+        ostr << coefs[i] << ',' << pows[i].first << ',' << pows[i].second << " ";
+    }
+    ostr << endl;
+}
+
+void LinearPredictorFunction::fillCoeffs(Point p, vector<double> &coefs) const
 {
     for (int i = 0; i < nFeatures; ++i) {
         coefs[i] = phi(pows[i].first, p.x) * phi(pows[i].second, p.y);

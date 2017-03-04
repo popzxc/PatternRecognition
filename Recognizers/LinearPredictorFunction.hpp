@@ -25,6 +25,8 @@ public:
     {
         return "LPF";
     }
+
+    void setAdditionalInfo(std::ostream &ostr) override;
 private:
     int nFeatures;
     Eigen::VectorXd coefs;

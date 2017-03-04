@@ -14,7 +14,7 @@ public:
 private:
     void showHelp();
     void generateDataset(const std::vector<std::string> &args);
-    void executeMethod(const std::vector<std::string> &args, const std::string &reductorType);
+    void executeMethod(const std::string &reductorType);
 
     std::vector<PointClass> readFile(std::string name);
 
